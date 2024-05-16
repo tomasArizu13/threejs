@@ -1,0 +1,67 @@
+SHADOWS ( we want drop shadows)
+
+1st: Activate the shadow map on the render
+
+2nd: Go trhough each object and decide if it can cast a shadow with castShadow and 
+if it can recieve shadow with recieve shadow.
+
+
+==> Only 3 types of lights support shadows 
+
+.) PointLight
+.) DirectionalLight
+.) SpotLight
+
+3rd: Activate the shadows on the light with the castShadow
+
+
+*To help us debug, we can use a CameraHelper with the camera used for the shadow map
+directionalLight.shadow.camera
+==> with this we can find near and far
+
+*Amplitud ==> reduce it, to have a better picture with more details
+directionalLight.shadow.camera.top = 2
+directionalLight.shadow.camera.right = 2
+directionalLight.shadow.camera.bottom = -2
+directionalLight.shadow.camera.left = 2
+
+We can control the blur of the shadow with the radius property
+
+Diferent types of shadows map Algorithms 
+==> we will usually use THREE.PCFSoftShadowMap - cause less performant but even softer edges
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+but radius dont work with this
+
+//Baking shadows ==> is very static, if we use it we cant move the geometries
+
+1st Deactivate all shadows form render
+renderer.shadowMap.enabled = false
+
+Then load the texture from the textures folder and then load the shadow
+
+We will use a MeshBasicMaterial on the plane material instead of MeshStandardMaterial
+
+// To fix the static thing in baking, Baking Shadow Alternative
+
+1st After deactivate all the shadows form the render, load the basic texture
+
+2nd Create a plane slightly above the floor with an alphaMap using simpleShadow
+
+INSTEAD OF PlaneBufferGeometry use ==> PlaneGeometry
+
+3rd Animate the sphere in the tick function ==> cos and sin to animate
+
+elapsedTime = how much seconds have been spent since we reloaded the page
+
+//Update the sphere
+    sphere.position.x = Math.cos(elapsedTime) * 1.5
+    sphere.position.z = Math.sin(elapsedTime) * 1.5
+    sphere.position.y = Math.abs(Math.sin(elapsedTime * 3))
+
+==> this is for bouncing animation (abs(sin(x))) ==> bounce 
+
+After this update the shadow
+//Update the Shadow
+    sphereShadow.position.x = sphere.position.x
+    sphereShadow.position.z = sphere.position.z
+    sphereShadow.material.opacity = (1 - sphere.position.y)* 0.3
