@@ -1,0 +1,246 @@
+HAUNTED HOUSE
+
+//Timer
+A quick note about the Timer class: it’s an alternative to the Clock 
+that we have been using up until now. It’s quite similar but with the 
+following key differences:
+
+Fixes a well-known bug we had with the Clock where the values were messed 
+up if calling getElapsedTime() multiple times on the same frame;
+It needs to be updated manually with timer.update();
+It tests if the tab is inactive and prevents large weird time values if that’s the case;
+It needs to be imported manually import { Timer } from 'three/addons/misc/Timer.js'.
+
+
+//Tips for measurements
+Having a specific unit ratio will help you create geometries. 
+Let's say you want to make the door. You know that a door is slightly taller 
+than you, so it should reach around 2 meters.
+
+For those using imperial units, you'll have to do the conversion.
+
+//Floor (line 22)
+
+A square plane perfectly centered in the scene. 
+This way, we can consider 0 on the y-axis to be the floor level
+
+We will use a Mesh( that always need a geometry and a material) 
+and instatiate a PlaneGeometry and MeshStandardMaterial
+
+==> Then we are going to fade out the edges
+
+//HOUSE
+//House container (line 30)
+We are going to create a Group, in case we want to move or scale the whole thing
+
+//Walls (line 34)
+Create the walls with a Mesh, that used a BoxGeometry and a MeshStandardMaterial
+
+==> then added to the house (house container) not to the scene
+
+*The walls are halfway buried in the floor because the origin of the geometry is at its center.
+Move them up using the position.y property and a value of 1.25 (half of the height)
+
+//Roof (line 42)
+We want a Pyramid (but there's not a specific geometry for a pyramid)
+==> We are going to use a ConeGeometry and set its sides count to only 4
+After creating the mesh, we move it up (position.y):
+Why 2.5 + 0.75 you might ask? 2.5 is the height of the walls 
+and 0.75 is half of the roof’s height because the cone’s origin is at its center
+==> Then rotate it, to find the axis and the angle
+The axis is y (the vertical axis) and the amount is: 
+Math.PI * 0.25 which is 1/8 of a circle
+
+//door (line 51)
+We are going to use a asimple squared plane for our door because we are going to use
+the door texture we used in previous lessons
+
+Move one position a little bit to fix the "z-fighting" bug
+door.position.z = 2 + 0.01
+
+//Bushes
+We are going to create simple spheres, we are going to create 4 bushes using 4 diff Meshes
+
+//Graves 
+we want to place 30 graves alla around the house
+
+we want a full circle so we need to multiply Math.PI by 2
+
+we will use sin a cos to get the x and y (z) coordinates on a circle
+
+fix the position because the graves are half inside the floor
+grave.position.y = Math.random() * 0.4
+
+add some randomness to the rotation
+
+//Texturing
+
+In this lesson, we are going to use the textures from Poly Haven.
+ They are realistic, easy to download, you can change what’s being downloaded, 
+ they are free and they are under CC0 license (you can do whatever you want with them).
+
+//Floor texture (trickiest) line 23 y 30
+
+load floorAlphatexture, and then put it inside the const floor with the alphaMap and 
+transparency true
+==> AlphaMap in the static folder
+
+To choose a Texture we use Poly Haven site, and we hav eto change the resolution to 1k
+instead of 4k
+==> Put it in zip, instead of blender
+
+And this are the zip contents definitions and differences:
+
+AO (ambient occlusion): Prevents the ambient light being applied to crevices
+Diffuse: The actual color
+Displacement: Will move the vertices up and down to create elevations
+Normal: Will fake the orientation to create details. DX and GL are different 
+ways of orienting the normals and we need to go for GL.
+Rough: How smooth or rough the material is
+Bump: Like the normal map, but it’s a grayscale value (we don’t need it)
+Metal: Defines the metallic parts (we need this one if available)
+And you might also have noticed that there is an AO/Rough/Metal option.
+This one will combine those three maps into one by saving them in the different channels 
+(red, green and blue) which is perfect in our case since having fewer textures is good 
+for performance (more about that later).
+
+Now, for the format, we have three choices:
+
+EXR: Large file size with maximum data
+JPG: Small file size with potential compression artefacts
+PNG: Medium file size with no compression artefacts
+
+Normally, we would use JPG for most textures and PNG for the Normal because 
+we avoid lossy compression on normal maps to prevent visual artefacts.
+But since we are going to use grungy textures, those artefacts won’t be visible, 
+which is why we are going to choose JPG for all of them.
+
+==> Download it and then unzip the file in the static/floor/ folder
+
+Yes, there are other formats. More about that later in the lesson.
+
+Set JPG for the AO/Rough/Metal, Diffuse, Displacement, Normal and uncheck any other option:
+
+==> Load the 4 downloaded textures and name the variables (line 25)
+Color(diff), ARM(arm), Normal(gl), Displacement(disp)
+
+Then apply the floorColorTexture to the map in the const floor
+
+The texture is too big, so we use the repeat property for the 4 textures (line 30)
+floorColorTexture.repeat.set(8 , 8)
+floorColorTexture.wrapS = THREE.RepeatWrapping
+floorColorTexture.wrapT = THREE.RepeatWrapping
+repeat this with the other 3 textures
+
+//Walls
+
+Same settings in polygon except for the Displacement (set off)
+
+same thing with the roof, the bushes, door and graves
+
+
+*Lights
+
+Change color and intensity of the AmbientLight and DirectionalLight
+
+Add a door light (line 271)
+
+*Create animated ghosts (line 279)
+
+create three PointLights
+
+we need trigonometry (cos y sin) to rotate the ghost light around the house,
+we are going to do it in the tick function:
+(esto es para que rote)
+const ghost1Angle = elapsedTime * 0.5
+    ghost1.position.x = Math.cos(ghost1Angle) * 4
+    ghost1.position.z = Math.sin(ghost1Angle) * 4
+    
+para que suba y baje la luz hacemos: 
+ghost1.position.y = Math.sin(ghost1Angle * 2.34) * Math.sin(ghost1Angle * 2.34) * Math.sin(ghost1Angle * 3.45)
+
+use desmos in the web to see the cos and sin function
+
+repetir lo mismo para las otras ghost lights cambiando las direcciones
+
+
+*Shadows (line 334)
+
+Activate the shadowmap in the renderer
+
+then change the type to THREE.PCFSoftShadowMap, for more realistic result
+
+//Cast and recieve
+Activate the shadows on the DirectionalLight and the three ghosts by setting the 
+castShadow to true
+(ignore graves for now)
+
+make a foor loop for the graves shadows
+
+//Mapping (line 359)
+
+for the DirectionalLight
+reduce the mapSize to 256
+set the top, right, bottom and left to 8 and -8
+set the near to 1 and the far to 20
+
+then to this for the 3 ghosts:
+ghost3.shadow.mapSize.width = 256
+ghost3.shadow.mapSize.height = 256
+ghost3.shadow.camera.far = 10
+
+*Sky
+we will expore more in depth in further lessons
+fisrt import it
+
+then instantiate(line 384)
+and update some uniforms on the material of sky
+
+Then update the mesh property because the sky looks like a small cube
+
+*Fog
+
+Add a fog section after the sky and instantiate the fog
+
+THREE.Fog(color, near, far)
+
+we will use FogExp2, because is more realistic
+
+THREE.FogExp2(color, density)
+
+*Texture optimisation
+optimize the weight of the texture( ahora pesan 11 mb que es mucho) es malo para cargar
+y ocupan mas memoria
+
+we are going to resize the textures and compress them
+
+we have JPGs, but there is a better format called WEBP(more optimized)
+
+There are many tools to convert those files
+
+Squoosh 
+CloudConvert (we will use this)
+TinyPNG
+
+Send bushes texture files to it:
+Click on the wrench icon, set the Width and Height to 256, and the Quality to 80:
+
+and click convert
+
+==> Then replace it in the code .jpg to .webp
+
+Note that you might have a different path if you used a different texture.
+
+The texture isn’t as sharp as before, but it’s a lot smaller.
+
+Let’s repeat the process for every texture:
+
+door/: size 1024 (height and width), quality to 80
+floor/: size 512, quality 80 (and compress the alpha.jpg the same way)
+grave/: set 512, quality 80
+roof/: set 512, quality 80
+wall/: set 1024, quality 80
+
+ahora pesa 1,3 mb, muchisimo menos!
+
+para no tener q cambiar todos los jpg a webp, es mejor descargarlos como PNG en Poly Heaven 
