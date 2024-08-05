@@ -1,0 +1,94 @@
+Instantiate any SphereBufferGeometry (line 23)
+
+Each vertex of the geometry will become a particle
+
+We need a special type of material called PointsMaterial. This material can already 
+do a lot, but we will discover how to create our own particles material to go even 
+further in a future lesson.
+
+The PointsMaterial has multiple properties specific to particles like the size to 
+control all particles size and the sizeAttenuation to specify if distant particles 
+should be smaller than close particles:
+
+Finally, we can create the final particles the same way we create a Mesh, but this 
+time by using the Points class. 
+Don't forget to add it to the scene:
+
+//Custom geometry (line 26)
+
+To create a custom geometry, we can start from a BufferGeometry, and add a position 
+attribute as we did in the Geometries lesson. Replace the SphereGeometry with 
+custom geometry and add the 'position' attribute as we did before:
+
+//Color, map and alpha map
+
+We can also use the map property to put a texture on those particles. Use the 
+TextureLoader already in the code to load one of the textures located 
+in /static/textures/particles/:
+
+We need to activate transparency with transparent and use the texture on 
+the alphaMap property instead of the map:
+
+// particlesMaterial.map = particleTexture
+particlesMaterial.transparent = true
+particlesMaterial.alphaMap = particleTexture
+
+Now that's better, but we can still randomly see some edges of the particles.
+
+That is because the particles are drawn in the same order as they are created, 
+and WebGL doesn't really know which one is in front of the other.
+
+There are multiple ways of fixing this.
+
+We will use depth write
+particlesMaterial.depthWrite = false
+
+//Blending
+With the blending property, we can tell the WebGl to add the color of the pixel to the
+color of the pixel already drawn
+
+change the blenfing property to THREE.AdditiveBlending
+
+//Colors
+
+We can have a different color for each particle. We first need to add a new attribute 
+named color as we did for the position. A color is composed of red, green, and 
+blue (3 values), so the code will be very similar to the position attribute. 
+We can actually use the same loop for these two attributes:
+
+//Animate
+
+There are mutiple ways to animate the particles
+
+==> By using the points an an object
+Rotate the particles in the tick function
+
+==> By changing the attributes (line 124)
+Another solution would be to update each vertex position separately. 
+This way, vertices can have different trajectories. We are going to animate 
+the particles as if they were floating on waves but first, let's see how we 
+can update the vertices.
+
+To update each vertex, we have to update the right part in the position attribute 
+because all the vertices are stored in this one dimension array where the first 
+3 values correspond to the x, y and z coordinates of the first vertex, then the 
+next 3 values correspond to the x, y and z of the second vertex, etc.
+
+We only want the vertices to move up and down, meaning that we are going to update 
+the y axis only. Because the position attribute is a one dimension array, we have 
+to go through it 3 by 3 and only update the second value which is the y coordinate.
+
+All the particles should be moving up and down like a plane.
+
+That's a good start and we are almost there. All we need to do now is apply an 
+offset to the sinus between the particles so that we get that wave shape.
+
+To do that, we can use the x coordinate. And to get this value we can use the 
+same technique that we used for the y coordinate but instead of i3 + 1, it's just i3:
+
+we will preffer using our own shader: 
+
+==>By using a custom shader
+To update these millions of particles on each frame with a good framerate, we need to 
+create our own material with our own shaders. But shaders are for a later lesson.
+
