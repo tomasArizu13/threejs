@@ -14,5 +14,9 @@
   "dependencies": {
     "lil-gui": "^0.19.2",
     "three": "^0.166.1"
-  }
+  },
+  "description": "## Setup Download [Node.js](https://nodejs.org/en/download/). Run this followed commands:",
+  "main": "vite.config.js",
+  "author": "",
+  "license": "ISC"
 }

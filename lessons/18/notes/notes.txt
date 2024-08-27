@@ -1,0 +1,82 @@
+// Base Particles
+
+create a generateGalaxy function
+
+then create random particles based on that count parameter, with a for
+
+and then add the materials and the points line 47 y 58
+
+// Tweaks(los controles) ==> agregarlos despues de crear la funcion generateGalaxy
+linea (66)
+
+gui.add(parameters, 'count').min(100).max(1000000).step(100).onFinishChange(generateGalaxy)
+gui.add(parameters, 'size').min(0.001).max(0.1).step(0.001).onFinishChange(generateGalaxy)
+
+==> Ahora tenemos que eliminar los materiales y points viejos una ves que movemos los Tweaks
+y se genero una nueva galaxia
+
+--> Para eso movemos la gemoetry material y points afuera de la generateGalaxy
+
+Luego agrego un if dentro de la funcion generateGalaxy para que si tiene algun valor
+cualquiera de material y geometry, los elimine con el metodo .dispose()
+y para los points usar el scene.remove(points)
+
+//Shape (spiral galaxy)
+Primero crear el radius parameter
+parameters.radius = 5
+
+y despues el onFinishChange
+gui.add(parameters, 'radius').min(0.01).max(20).step(0.01).onFinishChange(generateGalaxy)
+
+Ahora vamos a crear los vertices para  darle forma al espiral (line 50)
+
+//Branches
+Creamos el branches parameter
+
+y luego el onFinishChange
+
+y despues ponemos las particulas en las branches (line 51)
+
+const radius = Math.random() * parameters.radius
+        const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2
+
+        
+
+
+        positions[i3 + 0] = Math.cos(branchAngle) * radius
+        positions[i3 + 1] = 0
+        positions[i3 + 2] = Math.sin(branchAngle) * radius
+
+
+//Spin
+
+crear parametro 
+
+y despues el onFinishChange
+
+y depsues multiplicar el spinAngle por el spin parameter para sumarlo en el eje x y eje z
+(line 53)
+
+//Randomness
+
+crear parametro 
+
+y despues el onFinishChange
+
+Ahora vamos a crear un valor random para cada eje y multiplicarlo por el radius y Randomness
+parameters y aplicarlos en la posicion (line 58 )
+
+(Math.random() < 0.5 ? 1: - 1) ==> esto representa un if, que si da verdadero, devuelve 1
+y si da falso devuelve -1
+
+//Colors
+
+Create insideColor y outsideColor parameters
+y luego el onFinishChange
+
+y despues activamos el vertexColors on the material
+
+we create two const for the inside and outside color, to use ir now for mixing the colors
+
+const mixedColor = colorInside.clone()
+mixedColor.lerp(colorOutside, radius / parameters.radius)
