@@ -1,0 +1,66 @@
+First we remove the overflow line in the styles
+
+Then we will fixed the elastic animation from scrolling
+For this we will make the clearColor transparent and only the background-color on the page
+So we are going to set the alpha property to true on the WebGLRenderer(line 70)
+And then add a background-color to the html in CSS
+
+Add geometrys and materials for that geometrys, then add some ,lights
+
+Agregar un onchange en el gui para que funcione el tweak cambiando el color del materials
+.onChange(() =>
+    {
+        material.color.set(parameters.materialColor)
+    })
+
+//Gradient
+Instantiate the TextureLoader (line: 32)
+Agregar magfilter con nearestFilter para que utilize el gradient mas cercano en cada ocasion
+gradientTexture.magFilter = THREE.NearestFilter
+
+
+//Position
+create an objectDistance 
+and then: 
+mesh1.position.y = - objectsDistance * 0
+mesh2.position.y = - objectsDistance * 1
+mesh3.position.y = - objectsDistance * 2
+
+//Permanent Rotation
+crear un array con las 3 meshes
+y despeus crear la animacion en la tick function (line 126)
+
+
+//Move the camera with the scrolling
+Update the value of scrollY when user scroll the page
+Then in the tick function use scrollY to make the camera move (line 140)
+
+Ahora tenemos que hacer que cuando scrolleamos a la siguiente seccion aparezca otro objeto
+para eso vamos a tener que dividir scrollY por la altura de el viewport que es size.height
+
+
+//Parallax
+is the action of seeing one object through different observation points,
+vamos a agregar parallax effect moviendo la camara horizontal y vertical acorde al movimiento
+del mouse
+
+create a parallaxX and a parallaxY in the tick function y poner el cursor.x y cursor.y dentro
+pero lo que vamos a hacer es poner la camera en un group y le vamos a aplicar al group el parallax
+
+//Easing or smoothing for the parallax
+
+cameraGroup.position.x += (parallaxX - cameraGroup.position.x) * 0.1
+cameraGroup.position.y += (parallaxY - cameraGroup.position.y) * 0.1
+
+// Particles
+mejora la experiencia del usuario
+
+
+//Animate the meshes
+
+are going to use GSAP library
+npm install gsap@3.5.1
+and then import it at the start of the code
+we will use gsap.to in the if (line 166)
+
+
